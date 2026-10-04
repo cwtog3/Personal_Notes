@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="styles/main.css">
+    <title>Мои заметки</title>
+</head>
+<body>
+    <aside class="sidebar">
+        <nav>
+            <ul>
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="notes.html">Мои заметки</a> </li>
+                <li><a href="#">Статистика</a></li>
+            </ul>
+        </nav>
+    </aside>
+    <main>
+        <section class="search-form">
+            <h2>Поиск по записям</h2>
+            <form action="#" method="get">
+                <label for="query">Поиск по тексту</label>
+                <input type="search" id="query" name="query" placeholder="Введите слово">
+                <label for="theme">Тема</label>
+                <select id="theme" name="theme">
+                    <option value="">Все темы</option>
+                    <option value="природа">Природа</option>
+                    <option value="физика">Физика</option>
+                    <option value="кино">Кино</option>
+                    <option value="учёба">Учёба</option>
+                    <option value="рефлексия">Рефлексия</option>
+                    <option value="спорт">Спорт</option>
+                </select>
+                <button type="submit">Найти</button>
+            </form>
+        </section>
+        <section class="my-notes">
+            <h1>Мои заметки</h1>
+            <article>
+                <h3>26.09.2026</h3>
+                <p>Вопрос дня: "Что тебя удивило сегодня?"</p>
+                <p>"Заметила облако в форме кота"</p>
+                <img src="images/cat.jpg" alt="Мяу">
+                <ul>
+                    <li>Настроение: спокойное</li>
+                    <li>#природа</li>
+                </ul>
+            </article>
+            <article>
+                <h3>25.09.2026</h3>
+                <p>Вопрос дня: "Что нового ты узнала сегодня?"</p>
+                <p>"Прочитала про эффект Доплера - оказывается, он работает и для света"</p>
+                <ul>
+                    <li>Настроение: воодушевлённое</li>
+                    <li>#физика</li>
+                </ul>
+            </article>
+            <article>
+                <h3>24.09.2026</h3>
+                <p>Вопрос дня: "Что тебя сегодня вдохновило?"</p>
+                <p>"Пересмотрела сцену из «Бегущего по лезвию» - захотелось нарисовать город"</p>
+                <ul>
+                    <li>Настроение: мечтательное</li>
+                    <li>#кино</li>
+                </ul>
+            </article>
+            <article>
+                <h3>23.09.2026</h3>
+                <p>Вопрос дня: "Что было сложным, но ты справилась?"</p>
+                <p>"Сделала первую страницу проекта сама, без подсказок"</p>
+                <ul>
+                    <li>Настроение: гордое</li>
+                    <li>#учёба</li>
+                </ul>
+            </article>
+            <article>
+                <h3>22.09.2026</h3>
+                <p>Вопрос дня: "О чём ты думала больше всего?"</p>
+                <p>"О том, как связать свои интересы в одну систему - пока не до конца понимаю"</p>
+                <ul>
+                    <li>Настроение: задумчивое</li>
+                    <li>#рефлексия</li>
+                </ul>
+            </article>
+            <article>
+                <h3>21.09.2026</h3>
+                <p>Вопрос дня: "Что тебя сегодня порадовало?"</p>
+                <p>"Утренняя пробежка под любимый плейлист - начало дня было моим"</p>
+                <ul>
+                    <li>Настроение: бодрое</li>
+                    <li>#спорт</li>
+                </ul>
+            </article>
+        </section>
+    </main>
+</body>
+</html>

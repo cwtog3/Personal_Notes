@@ -1,128 +1,46 @@
-<!doctype html>
-
+<!DOCTYPE html>
 <html lang="ru">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="styles/main.css">
-    <title>Персонализированные заметки</title>
+    <title>Дневник рефлексии</title>
 </head>
-
 <body>
-
-    <header>
-        <a href="index.html">Дневник рефлексии</a>
-
-        <nav aria-label="Навигация">
+    <aside class="sidebar">
+        <nav>
             <ul>
-                <li><a href="#records">Записи</a></li>
-                <li><a href="#search">Поиск</a></li>
-                <li><a href="#about">О проекте</a></li>
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="notes.html">Мои заметки</a> </li>
+                <li><a href="#">Статистика</a></li>
             </ul>
         </nav>
+    </aside>
 
-    </header>
+    <main class="main-content">
+        <img
+            src="images/star.png"
+            alt=""
+            class="logo">
+        <header class="main-header">
 
-    <main>
-        <h1>Заметки</h1>
-        <p>Сайт с генерацией персонализированных вопросов для удобного ведения дневника рефлексии</p>
-
-        <section id="records">
-
-            <h2>Ваши записи</h2>
-
-            <article>
-                <h3>26.09.2026</h3>
-                <p>Вопрос дня: "Что тебя удивило сегодня?"</p>
-                <p>"Заметила облако в форме кота"</p>
-                <img src="images/cat.jpg" alt="Мяу">
-                <ul>
-                    <li>Настроение: спокойное</li>
-                    <li>#природа</li>
-                </ul>
-            </article>
-
-            <article>
-                <h3>25.09.2026</h3>
-                <p>Вопрос дня: "Что нового ты узнала сегодня?"</p>
-                <p>"Прочитала про эффект Доплера — оказывается, он работает и для света"</p>
-                <ul>
-                    <li>Настроение: воодушевлённое</li>
-                    <li>#физика</li>
-                </ul>
-            </article>
-
-            <article>
-                <h3>24.09.2026</h3>
-                <p>Вопрос дня: "Что тебя сегодня вдохновило?"</p>
-                <p>"Пересмотрела сцену из «Бегущего по лезвию» — захотелось нарисовать город"</p>
-                <ul>
-                    <li>Настроение: мечтательное</li>
-                    <li>#кино</li>
-                </ul>
-            </article>
-
-            <article>
-                <h3>23.09.2026</h3>
-                <p>Вопрос дня: "Что было сложным, но ты справилась?"</p>
-                <p>"Сделала первую страницу проекта сама, без подсказок"</p>
-                <ul>
-                    <li>Настроение: гордое</li>
-                    <li>#учёба</li>
-                </ul>
-            </article>
-
-            <article>
-                <h3>22.09.2026</h3>
-                <p>Вопрос дня: "О чём ты думала больше всего?"</p>
-                <p>"О том, как связать свои интересы в одну систему — пока не до конца понимаю"</p>
-                <ul>
-                    <li>Настроение: задумчивое</li>
-                    <li>#рефлексия</li>
-                </ul>
-            </article>
-
-            <article>
-                <h3>21.09.2026</h3>
-                <p>Вопрос дня: "Что тебя сегодня порадовало?"</p>
-                <p>"Утренняя пробежка под любимый плейлист — начало дня было моим"</p>
-                <ul>
-                    <li>Настроение: бодрое</li>
-                    <li>#спорт</li>
-                </ul>
-            </article>
-        </section>
-
-        <section id="search">
-            <h2>Поиск по записям</h2>
-            <form action="#" method="get">
-                <label for="query">Поиск по тексту</label>
-                <input type="search" id="query" name="query" placeholder="Введите слово">
-
-                <label for="theme">Тема</label>
-                <select id="theme" name="theme">
-                    <option value="">Все темы</option>
-                    <option value="природа">Природа</option>
-                    <option value="физика">Физика</option>
-                    <option value="кино">Кино</option>
-                    <option value="учёба">Учёба</option>
-                    <option value="рефлексия">Рефлексия</option>
-                    <option value="спорт">Спорт</option>
-                </select>
-
-                <button type="submit">Найти</button>
+            <h1>Вопрос дня</h1>
+        </header>
+        <section class="question-section">
+            <p class="question-text">Как вы чувствуете себя сегодня?</p>
+            <form action="#" method="post">
+                <label for="answer">Ваш ответ</label>
+                <textarea id="answer" name="answer" placeholder="Напишите ваши мысли здесь..."></textarea>
+                <button type="submit">Сохранить</button>
             </form>
         </section>
-
-        <section id="about">
-            <h2>О проекте</h2>
-            <p>Этот сайт помогает вести дневник рефлексии: каждый день он предлагает персональный вопрос, на который хочется ответить. Записи можно вести прямо здесь или экспортировать в Obsidian.</p>
+        <section class="recent-notes">
+            <h2>Последние заметки</h2>
         </section>
     </main>
 
-    <footer>
-        <p>Дневник рефлексии, 2026</p>
-    </footer>
+    <aside class="statistic-panel">
+        <h2>Статистика</h2>
+    </aside>
 </body>
 </html>
