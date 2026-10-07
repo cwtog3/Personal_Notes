@@ -25,7 +25,7 @@ ul {
 /*Общий макет, разметка главной страницы*/
 body {
     display: grid;
-    grid-template-columns: 1fr 300px;
+    grid-template-columns: 1fr;
     min-height: 100vh;
     gap: 1rem;
     padding: 1rem;
@@ -40,6 +40,7 @@ body {
     background-color: #D8B2FF;
     border-radius: 24px;
     padding: 2rem 1.5rem;
+    padding-top: 3.5rem;
     transform: translateX(-100%);           /*скрывает боковую панель*/
     transition: transform 0.3s ease;        /*плавная анимация*/
     z-index: 1000;
@@ -134,6 +135,7 @@ main {
     border: 0;
 }
 .question-section button {
+    font-family: "Lora", Georgia, serif;
     align-self: flex-start;
     padding: 0.75rem 2rem;
     background-color: #D8B2FF;
@@ -145,6 +147,17 @@ main {
 }
 .question-section button:hover {
     background-color: #6B2DAA;      /*слишком темный свет, хочется поменять*/
+}
+/*Статистика*/
+.statistic-panel {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    width: 300px;
+    height: calc(100vh - 2rem);
+    background: #F0E7FE;
+    border-radius: 24px;
+    padding: 2rem 1.5rem;
 }
 /*Медиа-запрос для мобильных устройств*/
 @media (max-width: 786px) {
