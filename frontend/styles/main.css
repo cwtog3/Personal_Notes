@@ -54,7 +54,7 @@ body {
     background: #D8B2FF;
     border-radius: 8px;
     line-height: 1;
-    user-select: none;   /* чтобы текст не выделялся при клике */
+    user-select: none;   /* чтобы текст не выделялся при клике*/
 }
 #menu-toggle:checked ~ .sidebar {
     transform: translateX(0);
