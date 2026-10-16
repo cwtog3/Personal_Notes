@@ -7,12 +7,14 @@ const notesHeading = notesList
 //пример данных
 const defaultNotes = [
     {
+        id: crypto.randomUUID(),
         date: "16.10.2026",
         text: "meow",
         question: "meow?",
         mood: "meow"
     },
     {
+        id: crypto.randomUUID(),
         date: "16.10.2025",
         text: "Заметила облако в форме кота",
         question: "Вопрос дня: Что тебя удивило сегодня?",
@@ -31,7 +33,14 @@ if (answerInput && answerForm) {
     answerForm.addEventListener("submit", function (event) {
     event.preventDefault();
     const answer = answerInput.value.trim();
+    if (answer === "") {
+        answerInput.setCustomValidity("Введите текст заметки");
+        answerInput.reportValidity();
+        return;
+    }
+    answerInput.setCustomValidity("");
     const newNote = {
+        id: crypto.randomUUID(),            //создание уникального id для каждой заметки
         date: new Date().toLocaleDateString("ru-RU"),
         question: "Как вы чувствуете себя сегодня?",
         text: answer,
@@ -39,6 +48,7 @@ if (answerInput && answerForm) {
     };
     notes.push(newNote);
     localStorage.setItem("notes", JSON.stringify(notes));
+    answerInput.value = "";         //очищает поле ввода заметки после сохранения предыдущей
     console.log(newNote);
     });
     console.log(notes);
@@ -53,9 +63,14 @@ function createNote(note) {
     article.append(date);
     article.append(question);
     article.append(text);
+    const deleteButton = document.createElement("button");
+    deleteButton.textContent = "Удалить";
+    deleteButton.dataset.id = note.id;
+    deleteButton.classList.add("delete-note");
     date.textContent = note.date;
     question.textContent = note.question;
     text.textContent = note.text;
+    article.append(deleteButton);
     return article;
 }
 //отображение данных из массива заметок на сайте
@@ -73,3 +88,18 @@ function renderNotes() {
     });
 }
 renderNotes();
+//кнопка удаления
+if (notesList) {
+    notesList.addEventListener("click", function (event) {
+        const button = event.target.closest(".delete-note");
+        if (!button) {
+            return;
+        }
+        const id = button.dataset.id;
+        notes = notes.filter(function (note) {
+            return note.id !== id;
+        });
+        localStorage.setItem("notes", JSON.stringify(notes));
+        renderNotes();
+    });
+}
