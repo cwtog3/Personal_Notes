@@ -11,14 +11,14 @@ const defaultNotes = [
         date: "16.10.2026",
         text: "meow",
         question: "meow?",
-        mood: "meow"
+        theme: "учёба"
     },
     {
         id: crypto.randomUUID(),
         date: "16.10.2025",
         text: "Заметила облако в форме кота",
         question: "Вопрос дня: Что тебя удивило сегодня?",
-        mood: "спокойное"
+        theme: "природа"
     }
 ];
 const savedNotes = localStorage.getItem("notes");       //получение раннее сохраненных заметок
@@ -60,9 +60,11 @@ function createNote(note) {
     const date = document.createElement("h3");
     const question = document.createElement("p");
     const text = document.createElement("p");
+    const theme = document.createElement("p");
     article.append(date);
     article.append(question);
     article.append(text);
+    article.append(theme);
     const deleteButton = document.createElement("button");
     deleteButton.textContent = "Удалить";
     deleteButton.dataset.id = note.id;
@@ -70,11 +72,12 @@ function createNote(note) {
     date.textContent = note.date;
     question.textContent = note.question;
     text.textContent = note.text;
+    theme.textContent = note.theme;
     article.append(deleteButton);
     return article;
 }
 //отображение данных из массива заметок на сайте
-function renderNotes() {
+function renderNotes(notesToRender) {
     if (!notesList) {
         return;
     }
@@ -82,12 +85,12 @@ function renderNotes() {
     articles.forEach(function (article) {
         article.remove();
     });
-    notes.forEach(function (note) {
+    notesToRender.forEach(function (note) {
         const article = createNote(note);
         notesList.append(article);
     });
 }
-renderNotes();
+renderNotes(notes);
 //кнопка удаления
 if (notesList) {
     notesList.addEventListener("click", function (event) {
@@ -101,5 +104,28 @@ if (notesList) {
         });
         localStorage.setItem("notes", JSON.stringify(notes));
         renderNotes();
+    });
+}
+
+//поиск по заметкам
+function searchNotes(query) {
+    return notes.filter(function (note) {
+            return note.text.toLowerCase().includes(query) ||
+                   note.question.toLowerCase().includes(query);
+        });
+}
+
+const searchForm = document.querySelector("#search-form");
+const searchInput = document.querySelector("#query");
+if (searchInput && searchForm) {
+    searchForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        const query = searchInput.value.trim().toLowerCase();
+        if (query === "") {
+            alert("Введите текст для поиска");          //по-другому выдавать сообщение
+            return;
+        }
+        const result = searchNotes(query);
+        renderNotes(result);
     });
 }
