@@ -11,14 +11,14 @@ const defaultNotes = [
         date: "16.10.2026",
         text: "meow",
         question: "meow?",
-        theme: "учёба"
+        tags: ["учёба", "развитие"]
     },
     {
         id: crypto.randomUUID(),
         date: "16.10.2025",
         text: "Заметила облако в форме кота",
         question: "Вопрос дня: Что тебя удивило сегодня?",
-        theme: "природа"
+        tags: ["природа"]
     }
 ];
 const savedNotes = localStorage.getItem("notes");       //получение раннее сохраненных заметок
@@ -44,7 +44,7 @@ if (answerInput && answerForm) {
         date: new Date().toLocaleDateString("ru-RU"),
         question: "Как вы чувствуете себя сегодня?",
         text: answer,
-        mood: "Не указано"
+        tags: []
     };
     notes.push(newNote);
     localStorage.setItem("notes", JSON.stringify(notes));
@@ -60,11 +60,11 @@ function createNote(note) {
     const date = document.createElement("h3");
     const question = document.createElement("p");
     const text = document.createElement("p");
-    const theme = document.createElement("p");
+    const tags = document.createElement("p");
     article.append(date);
     article.append(question);
     article.append(text);
-    article.append(theme);
+    article.append(tags);
     const deleteButton = document.createElement("button");
     deleteButton.textContent = "Удалить";
     deleteButton.dataset.id = note.id;
@@ -72,7 +72,7 @@ function createNote(note) {
     date.textContent = note.date;
     question.textContent = note.question;
     text.textContent = note.text;
-    theme.textContent = note.theme;
+    tags.textContent = note.tags.map(function (tag) {return "#" + tag;}).join(" ");
     article.append(deleteButton);
     return article;
 }
@@ -91,6 +91,7 @@ function renderNotes(notesToRender) {
     });
 }
 renderNotes(notes);
+
 //кнопка удаления
 if (notesList) {
     notesList.addEventListener("click", function (event) {
@@ -103,29 +104,38 @@ if (notesList) {
             return note.id !== id;
         });
         localStorage.setItem("notes", JSON.stringify(notes));
-        renderNotes();
+        renderNotes(notes);
     });
 }
 
-//поиск по заметкам
-function searchNotes(query) {
-    return notes.filter(function (note) {
-            return note.text.toLowerCase().includes(query) ||
+const allTags = [];
+notes.forEach(function (note) {
+    note.tags.forEach(function (tag) {
+        if (!allTags.includes(tag)) {
+            allTags.push(tag);
+        }
+    });
+});
+
+//поиск и фильтрация
+function applyFilters() {
+    const query = searchInput.value.trim().toLowerCase();
+    const selectedTags = tagsSelect.value;
+    const result = notes.filter(function (note) {
+        const matchSearch = note.text.toLowerCase().includes(query) ||
                    note.question.toLowerCase().includes(query);
-        });
+        const matchTag = selectedTags === "" || note.tags.includes(selectedTags);
+        return matchSearch && matchTag;
+    });
+    renderNotes(result);
 }
 
 const searchForm = document.querySelector("#search-form");
 const searchInput = document.querySelector("#query");
+const tagsSelect = document.querySelector("#tags");
 if (searchInput && searchForm) {
     searchForm.addEventListener("submit", function (event) {
         event.preventDefault();
-        const query = searchInput.value.trim().toLowerCase();
-        if (query === "") {
-            alert("Введите текст для поиска");          //по-другому выдавать сообщение
-            return;
-        }
-        const result = searchNotes(query);
-        renderNotes(result);
+        applyFilters();
     });
 }
