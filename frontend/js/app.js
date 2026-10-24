@@ -93,19 +93,31 @@ function createNote(note) {
     return article;
 }
 
-//для отображения заметок после поиска и фильтрации
+//для отображения заметок после поиска, фильтрации
 function getVisibleNotes() {
     const query = state.searchQuery;
-    return state.notes.filter(function (note) {
+    const visibleNotes = state.notes.filter(function (note) {
         const matchesSearch =
             note.text.toLowerCase().includes(query) ||
             note.question.toLowerCase().includes(query);
-            const matchesTags = state.selectedTags.length === 0 ||
-                state.selectedTags.some(function (tag) {
-                    return note.tags.includes(tag);
-                });
+        const matchesTags = state.selectedTags.length === 0 ||
+            state.selectedTags.some(function (tag) {
+                return note.tags.includes(tag);
+            });
         return matchesSearch && matchesTags;
     });
+//    сортировка по дате
+    visibleNotes.sort(function (noteA, noteB) {
+        const [dayA, monthA, yearA] = noteA.date.split(".").map(Number);
+        const [dayB, monthB, yearB] = noteB.date.split(".").map(Number);
+        const dateA = new Date(yearA, monthA - 1, dayA);
+        const dateB = new Date(yearB, monthB - 1, dayB);
+        if (state.sortBy === "date-asc") {
+            return dateA - dateB;
+        }
+        return dateB - dateA;
+    });
+    return visibleNotes;
 }
 
 function render() {
@@ -200,17 +212,27 @@ if (buttonTag && tagsDropdown) {
 }
 
 //поиск и фильтрация
+const searchForm = document.querySelector("#search-form");
+const searchInput = document.querySelector("#query");
+const tagsSelect = document.querySelector("#tags");
+
 function applyFilters() {
     state.searchQuery = searchInput.value.trim().toLowerCase();
     render();
 }
 
-const searchForm = document.querySelector("#search-form");
-const searchInput = document.querySelector("#query");
-const tagsSelect = document.querySelector("#tags");
 if (searchInput && searchForm) {
     searchForm.addEventListener("submit", function (event) {
         event.preventDefault();
         applyFilters();
+    });
+}
+
+//считывание какую именно сортировку надо провести
+const sortSelect = document.querySelector("#sort-by");
+if (sortSelect) {
+    sortSelect.addEventListener("change", function () {
+    state.sortBy = sortSelect.value;
+    render();
     });
 }
