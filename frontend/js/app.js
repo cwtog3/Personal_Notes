@@ -15,6 +15,13 @@ const defaultNotes = [
     },
     {
         id: crypto.randomUUID(),
+        date: "20.10.2026",
+        text: "ляляляля",
+        question: "meow?",
+        tags: ["учёба", "развитие"]
+    },
+    {
+        id: crypto.randomUUID(),
         date: "16.10.2025",
         text: "Заметила облако в форме кота",
         question: "Вопрос дня: Что тебя удивило сегодня?",
@@ -22,7 +29,14 @@ const defaultNotes = [
     }
 ];
 const savedNotes = localStorage.getItem("notes");       //получение раннее сохраненных заметок
-let notes = savedNotes ? JSON.parse(savedNotes) : defaultNotes;
+
+//массив состояний
+const state = {
+    notes: savedNotes ? JSON.parse(savedNotes): defaultNotes,
+    searchQuery: "",
+    selectedTags: [],
+    sortBy: "date-desc",
+};
 
 //сохранение заметки введенной пользователем
 const answerForm = document.querySelector("#answer-form");      //поиск по id
@@ -46,12 +60,14 @@ if (answerInput && answerForm) {
         text: answer,
         tags: []
     };
-    notes.push(newNote);
-    localStorage.setItem("notes", JSON.stringify(notes));
+    state.notes.push(newNote);
+    renderTagCheckboxes();
+    localStorage.setItem("notes", JSON.stringify(state.notes));
+    render();
     answerInput.value = "";         //очищает поле ввода заметки после сохранения предыдущей
     console.log(newNote);
     });
-    console.log(notes);
+    console.log(state.notes);
 };
 
 //создание новой заметки
@@ -76,6 +92,27 @@ function createNote(note) {
     article.append(deleteButton);
     return article;
 }
+
+//для отображения заметок после поиска и фильтрации
+function getVisibleNotes() {
+    const query = state.searchQuery;
+    return state.notes.filter(function (note) {
+        const matchesSearch =
+            note.text.toLowerCase().includes(query) ||
+            note.question.toLowerCase().includes(query);
+            const matchesTags = state.selectedTags.length === 0 ||
+                state.selectedTags.some(function (tag) {
+                    return note.tags.includes(tag);
+                });
+        return matchesSearch && matchesTags;
+    });
+}
+
+function render() {
+    const visibleNotes = getVisibleNotes();
+    renderNotes(visibleNotes);
+}
+
 //отображение данных из массива заметок на сайте
 function renderNotes(notesToRender) {
     if (!notesList) {
@@ -90,7 +127,7 @@ function renderNotes(notesToRender) {
         notesList.append(article);
     });
 }
-renderNotes(notes);
+render();
 
 //кнопка удаления
 if (notesList) {
@@ -100,34 +137,72 @@ if (notesList) {
             return;
         }
         const id = button.dataset.id;
-        notes = notes.filter(function (note) {
+        state.notes = state.notes.filter(function (note) {
             return note.id !== id;
         });
-        localStorage.setItem("notes", JSON.stringify(notes));
-        renderNotes(notes);
+        localStorage.setItem("notes", JSON.stringify(state.notes));
+        render();
+        renderTagCheckboxes();
     });
 }
 
-const allTags = [];
-notes.forEach(function (note) {
-    note.tags.forEach(function (tag) {
-        if (!allTags.includes(tag)) {
-            allTags.push(tag);
-        }
+//массив всех тегов
+function getAllTags() {
+    const allTags = [];
+    state.notes.forEach(function (note) {
+        note.tags.forEach(function (tag) {
+            if (!allTags.includes(tag)) {
+                allTags.push(tag);
+            }
+        });
     });
-});
+    return allTags;
+}
+
+//создание чекбоксов(тегов)
+const tagsDropdown = document.querySelector("#tags-dropdown");
+function renderTagCheckboxes() {
+    if (tagsDropdown) {
+        tagsDropdown.replaceChildren();
+        getAllTags().forEach(function (tag) {
+                const checkbox = document.createElement("input");
+                checkbox.value = tag;
+                const labelTag = document.createElement("label");
+                checkbox.type = "checkbox";
+                checkbox.checked = state.selectedTags.includes(tag);
+                checkbox.addEventListener("change", function () {
+                    if (checkbox.checked) {
+                        if (!state.selectedTags.includes(checkbox.value)) {
+                            state.selectedTags.push(checkbox.value);
+                        }
+                    } else {
+                        const filteredByTags = state.selectedTags.filter(function (tag) {
+                        return tag !== checkbox.value;
+                        });
+                    state.selectedTags = filteredByTags;
+                    }
+                render();
+                });
+                labelTag.append(checkbox);
+                labelTag.append(tag);
+                tagsDropdown.append(labelTag);
+                });
+    }
+}
+renderTagCheckboxes();
+
+//показ и скрытие перечня тегов
+const buttonTag = document.querySelector("#tags-toggle");
+if (buttonTag && tagsDropdown) {
+    buttonTag.addEventListener("click", function () {
+        tagsDropdown.hidden = !tagsDropdown.hidden;
+    });
+}
 
 //поиск и фильтрация
 function applyFilters() {
-    const query = searchInput.value.trim().toLowerCase();
-    const selectedTags = tagsSelect.value;
-    const result = notes.filter(function (note) {
-        const matchSearch = note.text.toLowerCase().includes(query) ||
-                   note.question.toLowerCase().includes(query);
-        const matchTag = selectedTags === "" || note.tags.includes(selectedTags);
-        return matchSearch && matchTag;
-    });
-    renderNotes(result);
+    state.searchQuery = searchInput.value.trim().toLowerCase();
+    render();
 }
 
 const searchForm = document.querySelector("#search-form");

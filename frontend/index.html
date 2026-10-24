@@ -33,7 +33,10 @@
             <p class="question-text">Как вы чувствуете себя сегодня?</p>
             <form id="answer-form" action="#" method="post">
                 <label for="answer" class="visually-hidden">Ваш ответ</label>
-                <textarea id="answer" required minlength="1" name="answer" placeholder="Напишите ваши мысли здесь..."></textarea>
+                <div class="answer-container">
+                    <textarea id="answer" required minlength="1" name="answer" placeholder="Напишите ваши мысли здесь..."></textarea>
+                    <button type="button" class="add-tag-button" title="Добавить тег">+</button>
+                </div>
                 <button type="submit">Сохранить</button>
             </form>
         </section>

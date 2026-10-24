@@ -165,6 +165,29 @@ main {
 .question-section button:hover {
     background-color: #6B2DAA;      /*слишком темный свет, хочется поменять*/
 }
+
+.answer-container {
+    position: relative;
+}
+.answer-container textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 80px 45px 12px;
+}
+.question-section .add-tag-button {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    padding: 3px 8px;
+    font-size: 20px;
+    line-height: 1.1;
+    border: none;
+    border-radius: 8px;
+    background-color: #D8B2FF;
+    color: #0B0116;
+    cursor: pointer;
+}
+
 /*Статистика*/
 .statistic-panel {
     position: absolute;
@@ -198,6 +221,22 @@ main {
         justify-content: space-between;
         color: #0B0116;
     }
+}
+
+.tag-filter {
+    position: relative;
+    display: inline-block;
+}
+#tags-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 10;
+    min-width: 150px;
+    padding: 10px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
 }
 
 /*Медиа-запрос - убирает панель статистики при сжатом экране*/
