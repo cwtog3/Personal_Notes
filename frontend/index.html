@@ -34,8 +34,15 @@
             <form id="answer-form" action="#" method="post">
                 <label for="answer" class="visually-hidden">Ваш ответ</label>
                 <div class="answer-container">
-                    <textarea id="answer" required minlength="1" name="answer" placeholder="Напишите ваши мысли здесь..."></textarea>
+                    <textarea id="answer" required minlength="1" maxlength="5000" name="answer" placeholder="Напишите ваши мысли здесь..."></textarea>
                     <button type="button" class="add-tag-button" title="Добавить тег">+</button>
+                </div>
+                <div id="note-tags-panel" hidden>
+                    <div id="note-tags-list">
+                    </div>
+                    <label for="new-tag-input">Новый тег</label>
+                    <input type="text" id="new-tag-input" name="new-tag-input">
+                    <button id="create-tag-button" type="button">Сохранить тег</button>
                 </div>
                 <button type="submit">Сохранить</button>
             </form>

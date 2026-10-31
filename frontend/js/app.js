@@ -1,8 +1,5 @@
 const notesList = document.querySelector(".my-notes");
 console.log(notesList);
-const notesHeading = notesList
-    ? notesList.querySelector("h1")
-    : null;
 
 //пример данных
 const defaultNotes = [
@@ -29,10 +26,13 @@ const defaultNotes = [
     }
 ];
 const savedNotes = localStorage.getItem("notes");       //получение раннее сохраненных заметок
+const savedTags = localStorage.getItem("tags");       //получение раннее сохраненных тегов
 
 //массив состояний
 const state = {
     notes: savedNotes ? JSON.parse(savedNotes): defaultNotes,
+    tags: savedTags ? JSON.parse(savedTags): [],
+    newNoteTags: [],
     searchQuery: "",
     selectedTags: [],
     sortBy: "date-desc",
@@ -58,10 +58,11 @@ if (answerInput && answerForm) {
         date: new Date().toLocaleDateString("ru-RU"),
         question: "Как вы чувствуете себя сегодня?",
         text: answer,
-        tags: []
+        tags: [...state.newNoteTags]
     };
     state.notes.push(newNote);
-    renderTagCheckboxes();
+    state.newNoteTags = [];
+    renderNoteTagCheckboxes();
     localStorage.setItem("notes", JSON.stringify(state.notes));
     render();
     answerInput.value = "";         //очищает поле ввода заметки после сохранения предыдущей
@@ -160,15 +161,7 @@ if (notesList) {
 
 //массив всех тегов
 function getAllTags() {
-    const allTags = [];
-    state.notes.forEach(function (note) {
-        note.tags.forEach(function (tag) {
-            if (!allTags.includes(tag)) {
-                allTags.push(tag);
-            }
-        });
-    });
-    return allTags;
+    return state.tags;
 }
 
 //создание чекбоксов(тегов)
@@ -203,7 +196,7 @@ function renderTagCheckboxes() {
 }
 renderTagCheckboxes();
 
-//показ и скрытие перечня тегов
+//показ и скрытие перечня тегов у фильтрации
 const buttonTag = document.querySelector("#tags-toggle");
 if (buttonTag && tagsDropdown) {
     buttonTag.addEventListener("click", function () {
@@ -236,3 +229,58 @@ if (sortSelect) {
     render();
     });
 }
+
+//добавление тегов у заметки
+const addTagButton = document.querySelector(".add-tag-button");         //кнопка добавления тегов
+const tagsPanel = document.querySelector("#note-tags-panel");           //панель для добавления тегов
+const tagInput = document.querySelector("#new-tag-input");                //поле для ввода тегов
+const createTagButton = document.querySelector("#create-tag-button");       //кнопка сохранения тега
+const noteTagsList = document.querySelector("#note-tags-list");             //список тегов
+if (addTagButton && tagsPanel) {
+    addTagButton.addEventListener("click", function () {
+        tagsPanel.hidden = !tagsPanel.hidden;
+    });
+}
+
+if (tagInput && createTagButton) {
+    createTagButton.addEventListener("click", function () {
+        const newTag = tagInput.value.trim();
+        if (newTag === "" || state.tags.includes(newTag)) {
+            return;
+        }
+        state.tags.push(newTag);
+        localStorage.setItem("tags", JSON.stringify(state.tags));
+        tagInput.value = "";
+        renderNoteTagCheckboxes();
+    });
+}
+
+//отображение тегов при создании заметки
+function renderNoteTagCheckboxes() {
+    if (!noteTagsList) {
+        return;
+    }
+    noteTagsList.replaceChildren();
+    state.tags.forEach(function (tag) {
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.value = tag;
+        checkbox.checked = state.newNoteTags.includes(tag);
+        checkbox.addEventListener("change", function () {
+            if (checkbox.checked) {
+                if (!state.newNoteTags.includes(tag)) {
+                    state.newNoteTags.push(tag);
+                }
+            } else {
+                state.newNoteTags = state.newNoteTags.filter(function (selectedTags) {
+                    return selectedTags !== tag;
+                });
+            }
+        })
+        const label = document.createElement("label");
+        label.append(checkbox);
+        label.append(tag);
+        noteTagsList.append(label);
+    });
+}
+renderNoteTagCheckboxes();
