@@ -4,6 +4,7 @@ from sqlalchemy import Text, Uuid, text, DateTime, Table, Column, ForeignKey
 from uuid import UUID
 from datetime import datetime
 
+# SQLAlchemy-модель, описывает, как заметка хранится в базе данных
 class Note(Base):
     __tablename__ = "notes"
     id: Mapped[UUID] = mapped_column(Uuid, primary_key=True, server_default=text("gen_random_uuid()"))

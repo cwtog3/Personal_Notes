@@ -21,10 +21,17 @@ database_url = URL.create(
     port=int(DB_PORT),
     database=DB_NAME
 )
-engine = create_engine(database_url)
+engine = create_engine(database_url)        #engine управляет соединениями с PostgreSQL
 
 class Base(DeclarativeBase):
     pass
 
 # создание сессии
 SessionLocal = sessionmaker(bind=engine)
+
+def get_db():
+    session = SessionLocal()
+    try:
+        yield session
+    finally:
+        session.close()
