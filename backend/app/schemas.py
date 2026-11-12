@@ -1,6 +1,6 @@
 from uuid import UUID
 from datetime import datetime
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 # задача класса - проверять данные, приходящие от пользователя
 class NoteCreate(BaseModel):        # BaseModel для автоматической валидации данных
@@ -21,3 +21,13 @@ class TagResponse(BaseModel):
     id: UUID
     name: str
     model_config = {"from_attributes": True}
+    
+class NoteUpdate(BaseModel):
+    question: str | None = Field(default=None, min_length=1)
+    content: str | None = Field(default=None, min_length=1, max_length=5000)
+    @field_validator("question", "content")
+    @classmethod
+    def check_not_null(cls, value):
+        if value is None:
+            raise ValueError("Данные не могут быть null")
+        return value
