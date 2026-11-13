@@ -11,7 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-app.add_middleware(CORSMiddleware, allow_origins=["http://127.0.0.1:5500"], allow_methods=["GET", "POST", "PATCH", "DELETE"], allow_headers = ["Content_Type"], allow_credentials = False)
+app.add_middleware(CORSMiddleware, allow_origins=["http://127.0.0.1:5500"], allow_methods=["GET", "POST", "PATCH", "DELETE"], allow_headers = ["Content-Type"], allow_credentials = False)
 
 @app.get("/")
 async def root():
@@ -52,7 +52,7 @@ def edit_note(note_id:UUID, data: NoteUpdate, db: Session = Depends(get_db)):
     db.refresh(note)
     return note
 
-@app.delete("/api/notes{note_id}", status_code=204)
+@app.delete("/api/notes/{note_id}", status_code=204)
 def delete_note(note_id: UUID, db: Session = Depends(get_db)):
     note = db.get(Note, note_id)
     if note is None:

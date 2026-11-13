@@ -27,10 +27,11 @@ const defaultNotes = [
 ];
 const savedNotes = localStorage.getItem("notes");       //получение раннее сохраненных заметок
 const savedTags = localStorage.getItem("tags");       //получение раннее сохраненных тегов
+const API_URL = "http://127.0.0.1:8000";
 
 //массив состояний
 const state = {
-    notes: savedNotes ? JSON.parse(savedNotes): defaultNotes,
+    notes: [],
     tags: savedTags ? JSON.parse(savedTags): [],
     newNoteTags: [],
     searchQuery: "",
@@ -38,13 +39,38 @@ const state = {
     sortBy: "date-desc",
 };
 
+function toFrontendNote(apiNote) {
+    return {
+        id: apiNote.id,
+        question: apiNote.question,
+        text: apiNote.content,
+        date: new Date(apiNote.created_at).toLocaleDateString("ru-RU"),
+        tags: apiNote.tags.map(function(tag) {return tag.name;})
+    }
+}
+
+async function loadNotes() {
+    try {
+        const response = await fetch(`${API_URL}/api/notes`);
+        if (!response.ok) {
+            throw new Error(`Ошибка: ${response.status}`);
+        }
+        const apiNotes = await response.json();
+        const frontendNotes = apiNotes.map(toFrontendNote);
+        state.notes = frontendNotes;
+        render();
+    }
+    catch (error) {
+        console.error("Ошибка загрузки заметок:", error);
+    }
+}
+
 //сохранение заметки введенной пользователем
 const answerForm = document.querySelector("#answer-form");      //поиск по id
 const answerInput = document.querySelector("#answer");
+
 if (answerInput && answerForm) {
-    console.log(answerForm);
-    console.log(answerInput);
-    answerForm.addEventListener("submit", function (event) {
+    answerForm.addEventListener("submit", async function (event) {
     event.preventDefault();
     const answer = answerInput.value.trim();
     if (answer === "") {
@@ -53,20 +79,31 @@ if (answerInput && answerForm) {
         return;
     }
     answerInput.setCustomValidity("");
-    const newNote = {
-        id: crypto.randomUUID(),            //создание уникального id для каждой заметки
-        date: new Date().toLocaleDateString("ru-RU"),
-        question: "Как вы чувствуете себя сегодня?",
-        text: answer,
-        tags: [...state.newNoteTags]
-    };
-    state.notes.push(newNote);
-    state.newNoteTags = [];
-    renderNoteTagCheckboxes();
-    localStorage.setItem("notes", JSON.stringify(state.notes));
-    render();
-    answerInput.value = "";         //очищает поле ввода заметки после сохранения предыдущей
-    console.log(newNote);
+    try {
+        const response = await fetch(`${API_URL}/api/notes`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+            question: "Как вы чувствуете себя сегодня?",
+            content: answer
+            })
+        });
+        if (!response.ok) {
+            throw new Error(`Ошибка: ${response.status}`);
+        }
+        const apiNote = await response.json();
+        const frontendNote = toFrontendNote(apiNote);
+        state.notes.push(frontendNote);
+        render();
+        answerInput.value = "";
+    }
+    catch (error) {
+        console.error("Ошибка создания заметки:", error);
+    }
+//    state.newNoteTags = [];
+//    renderNoteTagCheckboxes();
     });
     console.log(state.notes);
 };
@@ -86,11 +123,16 @@ function createNote(note) {
     deleteButton.textContent = "Удалить";
     deleteButton.dataset.id = note.id;
     deleteButton.classList.add("delete-note");
+    const editButton = document.createElement("button");
+    editButton.textContent = "Изменить";
+    editButton.dataset.id = note.id;
+    editButton.classList.add("edit-note");
     date.textContent = note.date;
     question.textContent = note.question;
     text.textContent = note.text;
     tags.textContent = note.tags.map(function (tag) {return "#" + tag;}).join(" ");
     article.append(deleteButton);
+    article.append(editButton);
     return article;
 }
 
@@ -140,23 +182,70 @@ function renderNotes(notesToRender) {
         notesList.append(article);
     });
 }
-render();
 
-//кнопка удаления
+//удаление заметки
 if (notesList) {
-    notesList.addEventListener("click", function (event) {
+    notesList.addEventListener("click", async function (event) {
         const button = event.target.closest(".delete-note");
         if (!button) {
             return;
         }
         const id = button.dataset.id;
-        state.notes = state.notes.filter(function (note) {
-            return note.id !== id;
-        });
-        localStorage.setItem("notes", JSON.stringify(state.notes));
-        render();
-        renderTagCheckboxes();
+        try {
+            const response = await fetch(`${API_URL}/api/notes/${id}`, {method: "DELETE"});
+            if (!response.ok) {
+                throw new Error(`Ошибка: ${response.status}`);
+            }
+            state.notes = state.notes.filter(function (note) {
+                return note.id !== id;
+            });
+            render();
+        }
+        catch (error) {
+            console.error("Ошибка удаления заметки:", error);
+        }
     });
+}
+
+//редактирование заметки
+if (notesList) {
+    notesList.addEventListener("click", async function(event) {
+        const button = event.target.closest(".edit-note");
+        if (!button) {return;}
+        const id = button.dataset.id;
+        const note = state.notes.find(function(note) {
+            return note.id === id;
+        });
+        if (!note) {return;}
+        const newText = prompt("Измените текст заметки", note.text);
+        if (newText === null || newText.trim() === "") {return;}
+        try {
+            const response = await fetch(`${API_URL}/api/notes/${id}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    content: newText.trim()
+                })
+            });
+            if (!response.ok) {
+                throw new Error(`Ошибка: ${response.status}`);
+            }
+            const apiNote = await response.json();
+            const frontendNote = toFrontendNote(apiNote);
+            state.notes = state.notes.map(function(note) {
+                if (note.id === id) {
+                    return frontendNote;
+                }
+
+                return note;
+            });
+            render();
+        } catch (error) {
+            console.error("Ошибка редактирования:", error);
+        }
+    })
 }
 
 //массив всех тегов
@@ -284,3 +373,7 @@ function renderNoteTagCheckboxes() {
     });
 }
 renderNoteTagCheckboxes();
+
+if (notesList) {
+    loadNotes();
+}
